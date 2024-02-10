@@ -22,6 +22,8 @@ import {
 } from "../ui/select";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import GamesCards from "./gamesCards";
+import Genres from "./Genres";
+import { Helmet } from "react-helmet";
 
 const HomePage = () => {
   const location = useLocation();
@@ -32,7 +34,7 @@ const HomePage = () => {
   const [filter, setFilter] = useState<string[] | undefined>();
   const search = new URLSearchParams(location.search);
   const theGame = search.get("search");
-  // useEffect to fetch the searched games from the api when location changes
+
   useEffect(() => {
     const fun = async () => {
       const search = new URLSearchParams(location.search);
@@ -45,6 +47,11 @@ const HomePage = () => {
         } else if (search.get("series")) {
           const gamesList = await gameServices.getGameSeries(
             search.get("series") as string,
+          );
+          setGame(gamesList);
+        } else if (search.get("genre")) {
+          const gamesList = await gameServices.getGenresGames(
+            search.get("genre") as string,
           );
           setGame(gamesList);
         } else {
@@ -78,10 +85,11 @@ const HomePage = () => {
       const scrollTop = window.scrollY;
 
       // Check if the user has scrolled to the end of the page
-      if (windowHeight + scrollTop === documentHeight) {
+      if (windowHeight + scrollTop + 300 >= documentHeight) {
         setIsEndOfPage(true);
       } else {
         setIsEndOfPage(false);
+        console.log(windowHeight + scrollTop === documentHeight);
       }
 
       // Check if the user has scrolled down enough to show the button
@@ -195,28 +203,47 @@ const HomePage = () => {
   };
 
   return (
-    <div className="flex flex-col sm:m-10 m-2 relative">
-      <div className="flex flex-col">
-        <div className="head flex justify-between">
-          <h2 className="text-3xl mb-10 inline font-inter font-bold">
-            {theGame ? `Search Results for: ${theGame}` : "Popular Games"}
-          </h2>
-          <div className="flex gap-20 items-center">
-            {FilterPlatform()}
-            {SortMenu()}
+    <div className="flex h-full ">
+      <div className="flex flex-col min-w-[80%] sm:m-10 m-2 relative">
+        <div className="flex flex-col">
+          <div className="head flex justify-between">
+            <h2 className="text-3xl mb-10 inline font-inter font-bold">
+              {theGame ? (
+                <>
+                  {`Search Results for: ${theGame}`}{" "}
+                  <Helmet>
+                    <title>Search Results: {theGame}</title>
+                  </Helmet>
+                </>
+              ) : (
+                <>
+                  "Popular Games"
+                  <Helmet>
+                    <title>WTG: What To Game</title>
+                  </Helmet>
+                </>
+              )}
+            </h2>
+            <div className="flex gap-20 items-center">
+              {FilterPlatform()}
+              {SortMenu()}
+            </div>
           </div>
+          {renderGames()}
         </div>
-        {renderGames()}
+        {topVisible && (
+          <button
+            type="button"
+            className="fixed z-10 bottom-8 right-8 sm:bottom-12 text-black sm:right-12 bg-teal-300 flex justify-center items-center w-10 h-10 rounded-xl cursor-pointer"
+            onClick={scrollToTop}
+          >
+            <HiArrowUp />
+          </button>
+        )}
       </div>
-      {topVisible && (
-        <button
-          type="button"
-          className="fixed bottom-8 right-8 sm:bottom-12 sm:right-12 bg-teal-800 flex justify-center items-center w-12 h-12 rounded-full cursor-pointer"
-          onClick={scrollToTop}
-        >
-          <HiArrowUp />
-        </button>
-      )}
+      <div className="top-0 h-screen min-w-[10%] hidden lg:block sticky my-14">
+        <Genres />
+      </div>
     </div>
   );
 };

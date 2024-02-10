@@ -4,6 +4,7 @@ import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { useTheme } from "../theme-provider";
 import SearchBar from "./search";
+import { Button } from "../ui/button";
 
 const Navbar = () => {
   const [search, setSearch] = useState<boolean>(false);
@@ -76,12 +77,14 @@ const Navbar = () => {
           id="RightSide"
           className="flex-0 lg:block hidden font-inter dark:text-white text-xl"
         >
-          <button
-            className={`text-3xl ${theme === "light" ? "text-black" : "text-white"}`}
+          <Button
+            className={`text-3xl justify-center p-2 `}
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            variant="ghost"
+            size="icon"
           >
             {theme === "dark" ? <MdLightMode /> : <MdDarkMode />}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

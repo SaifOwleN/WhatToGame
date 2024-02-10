@@ -8,6 +8,7 @@ import Platforms from "./Platforms";
 import Ratings from "./Ratings";
 import Series from "./Series";
 import { GameData, GameScreenshot } from "./type";
+import { Helmet } from "react-helmet";
 
 const GamePage = () => {
   const id = useParams().id;
@@ -33,18 +34,23 @@ const GamePage = () => {
 
   const AchAndSeries = () => (
     <>
-      {game?.game_series_count && <Series game={game} className="w-64 h-16" />}
-      {game?.achievements_count && (
+      {game?.game_series_count ? (
+        <Series game={game} className="w-64 h-16" />
+      ) : null}
+      {game?.achievements_count ? (
         <AchievementeButton
           className="w-64 h-16"
           noAchieve={game.achievements_count}
         />
-      )}
+      ) : null}
     </>
   );
 
   return (
     <div className="flex xl:flex-row flex-col xl:ml-16 sm:m-4">
+      <Helmet>
+        <title>{game ? game.name + " | WTG" : ""}</title>
+      </Helmet>
       <div className="flex flex-col">
         <h2 className="text-2xl font-bold mb-4">Game Preview</h2>
         <Images gameSS={gameSS as GameScreenshot} game={game as GameData} />
@@ -64,8 +70,8 @@ const GamePage = () => {
         <div className="text-gray-400 m-2">
           {game
             ? parse(
-              game.description.slice(0, game.description.indexOf("Español")),
-            )
+                game.description.slice(0, game.description.indexOf("Español")),
+              )
             : null}
         </div>
 
